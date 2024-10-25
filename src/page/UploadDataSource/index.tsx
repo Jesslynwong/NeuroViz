@@ -22,6 +22,7 @@ import {
   host,
   productName,
   supportedUploadExtension,
+  uploadConfig,
 } from "../../config/configuration";
 import styled from "styled-components";
 import { UploadOutlined } from "@ant-design/icons";
@@ -138,6 +139,7 @@ export default function UploadDataSource() {
       name: "file",
       action: `${host}/FileHanddler`,
       listType: "text",
+      maxCount: uploadConfig.maxHistoryCount,
       itemRender,
       disabled: draggerStatus === "uploading",
       fileList: fl,
@@ -145,7 +147,11 @@ export default function UploadDataSource() {
         const { name } = file;
         if (!supportedUploadExtension.find((v) => name.endsWith(v))) {
           setDraggerStatus("removed");
-          message.info(`Only support ${SerilizedFileExtension} to upload!`);
+          message.error(`Only support ${SerilizedFileExtension} to upload!`);
+          return Upload.LIST_IGNORE;
+        } else if (fl.length >= uploadConfig.maxHistoryCount) {
+          setDraggerStatus("removed");
+          message.error(`Exceed max file count, please remove unused record!`);
           return Upload.LIST_IGNORE;
         }
       },
@@ -201,6 +207,7 @@ export default function UploadDataSource() {
       };
       goCheckReport(matchFile.uid);
     } else {
+      message.error("Fail to process your file!")
       matchFile.response = {
         ...(matchFile.response ?? {}),
         response,
@@ -239,16 +246,6 @@ export default function UploadDataSource() {
             }}
           >
             <div>
-              <StyledButton
-                loading={isUploadingWithAnimation}
-                icon={<UploadOutlined style={{ fontSize: "24px" }} />}
-                size="large"
-              >
-                {isUploadingWithAnimation
-                  ? "uploading"
-                  : "Click or drag file to this area to upload"}
-              </StyledButton>
-
               <div>
                 <p
                   className="ant-upload-hint"
@@ -264,30 +261,49 @@ export default function UploadDataSource() {
                   banned files.
                 </p>
               </div>
+
+              <StyledButton
+                loading={isUploadingWithAnimation}
+                icon={<UploadOutlined style={{ fontSize: "24px" }} />}
+                size="large"
+              >
+                {isUploadingWithAnimation
+                  ? "uploading"
+                  : "Click or drag file to this area to upload"}
+              </StyledButton>
+
+              <Flex
+                gap="small"
+                align="center"
+                justify="center"
+                style={{
+                  marginTop: "16px",
+                  width: "100%",
+                }}
+              >
+                <Safe />
+                <Flex
+                  vertical
+                  align="start"
+                  style={{ fontSize: "12px", color: "#333", opacity: 0.9 }}
+                >
+                  <div>
+                    Your files will be securely handled by {productName} servers
+                    and deleted.
+                  </div>
+                  <div>
+                    <span>
+                      By using this service, you agree to the {productName}{" "}
+                    </span>
+                    <a>Terms of Use</a>
+                    <span> and </span>
+                    <a>Privacy Policy</a>.
+                  </div>
+                </Flex>
+              </Flex>
             </div>
           </Dragger>
         </DraggerWrapper>
-
-        <Flex gap="small" align="center" style={{ marginTop: "32px" }}>
-          <Safe />
-          <Flex
-            vertical
-            style={{ fontSize: "12px", color: "#333", opacity: 0.9 }}
-          >
-            <div>
-              Your files will be securely handled by {productName} servers and
-              deleted.
-            </div>
-            <div>
-              <span>
-                By using this service, you agree to the {productName}{" "}
-              </span>
-              <a>Terms of Use</a>
-              <span> and </span>
-              <a>Privacy Policy</a>.
-            </div>
-          </Flex>
-        </Flex>
       </Wrapper>
 
       <Spin
@@ -312,7 +328,6 @@ const Wrapper = styled.div`
 
 const DraggerWrapper = styled.section`
   width: 66%;
-  height: 200px;
   min-width: 200px;
   > span {
     > div:nth-of-type(1):hover {
@@ -330,7 +345,7 @@ const LogoWrapper = styled.section`
 `;
 
 const StyledLogo = styled.div`
-  margin: 36px 0;
+  margin: 24px 0;
   width: 260px;
   height: 260px;
   background-size: contain;
