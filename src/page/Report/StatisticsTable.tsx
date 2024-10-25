@@ -1,5 +1,5 @@
 import { FullscreenExitOutlined, FullscreenOutlined } from "@ant-design/icons";
-import { Table, TableProps, Tooltip } from "antd";
+import { Badge, Table, TableProps, Tooltip } from "antd";
 import styled from "styled-components";
 import RowRadarChart from "./RowRadarChart";
 import { Item, JsonReport, ResponsedObject } from ".";
@@ -8,6 +8,7 @@ import star from "../../assets/svgs/star_02.svg";
 import axisX from "../../assets/svgs/axis_x.svg";
 import axisY from "../../assets/svgs/axis_y.svg";
 import extra from "../../assets/svgs/extra.svg";
+import { ReactComponent as Discrete } from "../../assets/svgs/discrete.svg";
 import { StyledImg } from "../../components/styled.components";
 
 type DataType = Item & { key: string; name: string };
@@ -27,12 +28,12 @@ export default function StatisticsTable({
     y_axis_field,
   } = analysis_results;
   const items = [
+    "mean",
     "count",
     "std",
     "25%",
     "50%",
     "75%",
-    "mean",
     "min",
     "median",
     "max",
@@ -40,6 +41,23 @@ export default function StatisticsTable({
   const fieldNames = Object.keys(descriptive_statistics);
 
   const columns: TableProps<DataType>["columns"] = [
+    {
+      title: "Axis",
+      dataIndex: "name",
+      fixed: "left",
+      align: "center",
+      render: (text) => (
+        <StyledAxisField>
+          {x_axis_fields.includes(text) ? (
+            <StyledImg width="24px" heigh="24px" src={axisX} alt="axis_x" />
+          ) : y_axis_field.includes(text) ? (
+            <StyledImg width="24px" heigh="24px" src={axisY} alt="axis_y" />
+          ) : (
+            ""
+          )}
+        </StyledAxisField>
+      ),
+    },
     {
       title: "Field",
       dataIndex: "name",
@@ -53,30 +71,7 @@ export default function StatisticsTable({
       dataIndex: "start_count",
       render: (data) => <Stars count={data} />,
     },
-    ...items.map((v) => ({
-      title: v,
-      dataIndex: v,
-      sorter: { compare: (a: DataType, b: DataType) => a[v] - b[v] },
-      align: "center" as const,
-      render: (text: string) => <StyledCellValue>{text}</StyledCellValue>,
-    })),
-    {
-      title: "Axis",
-      dataIndex: "name",
-      fixed: "left",
-      align: "center",
-      render: (text) => (
-        <StyledAxisField>
-          {x_axis_fields.includes(text) ? (
-            <StyledImg width="20px" heigh="20px" src={axisX} alt="axis_x" />
-          ) : y_axis_field.includes(text) ? (
-            <StyledImg width="20px" heigh="20px" src={axisY} alt="axis_y" />
-          ) : (
-            ""
-          )}
-        </StyledAxisField>
-      ),
-    },
+
     {
       title: "Outliers",
       dataIndex: "outliers",
@@ -87,11 +82,26 @@ export default function StatisticsTable({
             title={`[ ${data.sort((a, b) => a - b).join(", ")} ]`}
             color={"cyan"}
           >
-            <StyledImg src={extra} alt="extra" />
+            <Discrete
+              style={{
+                verticalAlign: "middle",
+                width: "20px",
+                height: "20px",
+                cursor: "pointer",
+                fill: "#666",
+              }}
+            />
           </Tooltip>
         );
       },
     },
+    ...items.map((v) => ({
+      title: v,
+      dataIndex: v,
+      sorter: { compare: (a: DataType, b: DataType) => a[v] - b[v] },
+      align: "center" as const,
+      render: (text: string) => <StyledCellValue>{text}</StyledCellValue>,
+    })),
   ];
 
   const data: DataType[] = fieldNames.map((field) => ({
@@ -153,9 +163,11 @@ const Stars = ({
         ? "-"
         : Array.from({ length: totalCount }).map((_, i) => (
             <StyledImg
-              style={{ opacity: 1 }}
+              style={{ opacity: i < count ? 1 : 0.4 }}
               src={i < count ? star : starEmpty}
               alt="star empty"
+              width="20px"
+              heigh="20px"
             />
           ))}
     </div>

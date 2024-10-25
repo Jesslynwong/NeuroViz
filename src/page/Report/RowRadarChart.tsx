@@ -57,6 +57,7 @@ export default function RowRadarChart({
   }, [fieldToShow, option]);
 
   const matchedComment = corr_comment?.target_variables[fieldToShow];
+  console.log(">> corr_comment: ", corr_comment);
 
   const renderColor = (key: Action) => {
     return key === activeAction ? "skyblue" : "#ccc";

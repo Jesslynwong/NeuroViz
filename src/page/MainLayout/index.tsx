@@ -5,77 +5,69 @@
  * @LastEditTime: 2024-10-10 14:39:48
  * @FilePath: /dataVis/src/page/Layout/index.tsx
  */
-import { Layout, Menu, theme } from "antd";
-import type { MenuProps } from "antd";
+import { Layout, Menu } from "antd";
 import { Outlet } from "react-router-dom";
 
-import { useNavigate } from "react-router-dom";
-import logo from "../../assets/logo1.jpeg";
-import styled from "styled-components";
+import logo from "../../assets/logo_pure.png";
+import logoText from "../../assets/logo_text.png";
+import styled, { keyframes } from "styled-components";
+import { departmentName, productName } from "../../config/configuration";
+import { filterAnimation } from "../../components/styled.components";
 
 const { Header, Content, Footer } = Layout;
-type MenuItem = Required<MenuProps>["items"][number];
+
+const items = [
+  {
+    key: 1,
+    label: "Tools",
+  },
+  {
+    key: 2,
+    label: "Report",
+  },
+  {
+    key: 3,
+    label: "About Us",
+  },
+];
 
 export default function MainLayout() {
-  const {
-    token: { colorBgContainer, borderRadiusLG },
-  } = theme.useToken();
-  const navigate = useNavigate();
-  const items: MenuItem[] = [
-    {
-      label: "Upload 📝",
-      key: "Upload",
-      onClick: () => {
-        navigate("/");
-      },
-    },
-    {
-      label: "Statistics 📈",
-      key: "Statistics",
-      onClick: () => {
-        navigate("/statistics");
-      },
-    },
-    {
-      label: "Ideas 🌟",
-      key: "Ideas",
-      onClick: () => {
-        navigate("/ideas");
-      },
-    },
-  ];
-
   return (
-    <Layout style={{ minHeight: "100vh" }}>
-      <Header style={{ display: "flex", alignItems: "center" }}>
+    <Layout style={{ height: "100vh" }}>
+      <StyledHeader>
         <StyledLogo />
+        <StyledLogoText />
         <Menu
-          theme="dark"
           mode="horizontal"
-          defaultSelectedKeys={["2"]}
+          selectable={false}
           items={items}
-          style={{ flex: 1, minWidth: 0 }}
+          style={{ marginLeft: "10px" }}
         />
-      </Header>
-      <Content
-        style={{
-          margin: "0 48px",
-          background: colorBgContainer,
-          minHeight: 601,
-          borderRadius: borderRadiusLG,
-        }}
-      >
+      </StyledHeader>
+      <Content>
         <Outlet />
       </Content>
       <Footer style={{ textAlign: "center" }}>
-        NeuroViz ©{new Date().getFullYear()} Created by C2E
+        {productName} ©{new Date().getFullYear()} Created by {departmentName}
       </Footer>
     </Layout>
   );
 }
 
 const StyledLogo = styled.img.attrs({ src: logo, alt: "logo" })`
-  margin-top: 10px;
-  height: 100%;
+  height: 36px;
   cursor: pointer;
+  animation: ${filterAnimation} 3s ease-in-out 0s infinite;
+`;
+
+const StyledLogoText = styled.img.attrs({ src: logoText, alt: "NeuroViz" })`
+  margin-left: 8px;
+  height: 20px;
+`;
+
+const StyledHeader = styled(Header)`
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
 `;

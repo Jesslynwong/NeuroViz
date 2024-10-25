@@ -14,9 +14,9 @@ import React, {
 } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import UploadDataSource from "./page/UploadDataSource";
-import Statistics from "./page/Statistics";
 import Report from "./page/Report";
 import { UploadFile } from "antd";
+import MainLayout from "./page/MainLayout";
 
 type IGlobalContext<T> = {
   fileList: T[];
@@ -34,7 +34,7 @@ const App: React.FC = () => {
     <GlobalContext.Provider value={{ fileList, setFileList }}>
       <BrowserRouter>
         <Routes>
-          <Route path="/">
+          <Route path="/" element={<MainLayout />}>
             <Route index element={<UploadDataSource />} />
             <Route path="report/:uid" element={<Report />} />
           </Route>

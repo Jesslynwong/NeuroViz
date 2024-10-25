@@ -6,7 +6,7 @@
  * @FilePath: /dataVis/src/page/Upload/index.ts
  */
 
-import logo from "../../assets/logo1.jpeg";
+import logo from "../../assets/logo_pure.png";
 
 import {
   Button,
@@ -15,9 +15,14 @@ import {
   Upload,
   Spin,
   ConfigProvider,
+  Flex,
 } from "antd";
 
-import { supportedUploadExtension } from "../../config/configuration";
+import {
+  host,
+  productName,
+  supportedUploadExtension,
+} from "../../config/configuration";
 import styled from "styled-components";
 import { UploadOutlined } from "@ant-design/icons";
 import { createRef, useCallback, useEffect, useMemo, useState } from "react";
@@ -28,8 +33,7 @@ import { useNavigate } from "react-router-dom";
 import { useGlobalContext } from "../../App";
 import { jsonizeData } from "../../utils";
 import LoadingLogo from "../../components/LoadingLogo";
-
-const host = "http://120.26.49.230:7777";
+import { ReactComponent as Safe } from "../../assets/svgs/safe.svg";
 
 const { Dragger } = Upload;
 const SerilizedFileExtension = supportedUploadExtension
@@ -263,6 +267,27 @@ export default function UploadDataSource() {
             </div>
           </Dragger>
         </DraggerWrapper>
+
+        <Flex gap="small" align="center" style={{ marginTop: "32px" }}>
+          <Safe />
+          <Flex
+            vertical
+            style={{ fontSize: "12px", color: "#333", opacity: 0.9 }}
+          >
+            <div>
+              Your files will be securely handled by {productName} servers and
+              deleted.
+            </div>
+            <div>
+              <span>
+                By using this service, you agree to the {productName}{" "}
+              </span>
+              <a>Terms of Use</a>
+              <span> and </span>
+              <a>Privacy Policy</a>.
+            </div>
+          </Flex>
+        </Flex>
       </Wrapper>
 
       <Spin
@@ -282,13 +307,12 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 100vh;
   width: 100%;
 `;
 
 const DraggerWrapper = styled.section`
-  width: 68%;
-  height: 240px;
+  width: 66%;
+  height: 200px;
   min-width: 200px;
   > span {
     > div:nth-of-type(1):hover {
@@ -302,16 +326,13 @@ const DraggerWrapper = styled.section`
 `;
 
 const LogoWrapper = styled.section`
-  display: flex;
-  justify-content: center;
   position: relative;
 `;
 
 const StyledLogo = styled.div`
-  margin-bottom: -48px;
-  margin-top: 48px;
-  width: 500px;
-  height: 400px;
+  margin: 36px 0;
+  width: 260px;
+  height: 260px;
   background-size: contain;
   background-repeat: no-repeat;
   cursor: pointer;
