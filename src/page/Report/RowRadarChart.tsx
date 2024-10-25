@@ -57,6 +57,7 @@ export default function RowRadarChart({
   }, [fieldToShow, option]);
 
   const matchedComment = corr_comment?.target_variables[fieldToShow];
+  console.log(">> corr_comment: ", corr_comment);
 
   const renderColor = (key: Action) => {
     return key === activeAction ? "skyblue" : "#ccc";
@@ -94,14 +95,14 @@ export default function RowRadarChart({
             avatar={
               <Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=100" />
             }
-            title="Description"
+            title="Explanation"
             description={matchedComment.explanation}
           />
         );
       case "insight":
         return (
           <List
-            header={<StyledHeader>Insights</StyledHeader>}
+            header={<StyledHeader>Relationship Insights</StyledHeader>}
             itemLayout="horizontal"
             dataSource={matchedComment.relationship_insights}
             renderItem={(item, index) => (
@@ -123,7 +124,7 @@ export default function RowRadarChart({
       case "suggest":
         return (
           <List
-            header={<StyledHeader>Insights</StyledHeader>}
+            header={<StyledHeader>Analysis Suggestions</StyledHeader>}
             itemLayout="horizontal"
             dataSource={matchedComment.analysis_suggestions}
             renderItem={(item) => (

@@ -84,14 +84,6 @@ export interface ResponsedObject<T extends string = string> {
   };
 }
 
-/* 
-  todo: 
-  1. show start_count - done
-  2. show corr_comment - done
-  3. reinforce loading animation 
-
-*/
-
 export default function Report() {
   const { uid } = useParams();
   const { fileList, setFileList } = useGlobalContext();

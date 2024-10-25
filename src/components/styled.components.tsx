@@ -37,14 +37,23 @@ export const SVGWrapper = styled.div<{
 
 export const filterAnimation = keyframes`
   0% {
-    filter: contrast(175%) opacity(80%) saturate(100%) hue-rotate(0);
+    filter: contrast(100%)  saturate(150%) hue-rotate(0);
   }
  
   50% {
-    filter: contrast(100%) opacity(100%) saturate(200%) hue-rotate(180deg);
+    filter: contrast(100%)  saturate(150%) hue-rotate(0);
+  }
+
+  60% {
+    filter: contrast(100%)  saturate(150%) hue-rotate(15deg);
+  }
+
+  80% {
+    filter:  contrast(175%)  saturate(200%) hue-rotate(0);
+
   }
 
   100% {
-    filter:  contrast(175%) opacity(80%) saturate(100%) hue-rotate(0);
+    filter: contrast(100%)  saturate(150%) hue-rotate(0);
   }
 `;

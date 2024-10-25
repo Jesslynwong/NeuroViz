@@ -1,14 +1,19 @@
-import { DeleteOutlined, EyeOutlined } from "@ant-design/icons";
+import {
+  CheckCircleFilled,
+  CloseCircleFilled,
+  DeleteOutlined,
+  EyeOutlined,
+} from "@ant-design/icons";
 import { Progress, UploadFile } from "antd";
 import { MouseEventHandler } from "react";
 import styled from "styled-components";
+import { ReactComponent as Loading } from "../../assets/svgs/loading.svg";
 
 interface ItemRenderProps {
   file: UploadFile;
   progress?: number;
   showProgress?: boolean;
   filenameColor?: string;
-  slot?: React.ReactNode;
   onEyeClick?: MouseEventHandler<HTMLSpanElement>;
   onDelete?: MouseEventHandler<HTMLSpanElement>;
 }
@@ -17,7 +22,6 @@ export default function ItemRender({
   progress,
   showProgress,
   filenameColor,
-  slot,
   onDelete,
   onEyeClick,
 }: ItemRenderProps) {
@@ -27,7 +31,27 @@ export default function ItemRender({
     <div>
       <ItemRenderWrapper>
         <FileNameWrapper style={{ color: filenameColor }}>
-          <span style={{ marginRight: "4px" }}>{slot}</span>
+          <span style={{ marginRight: "4px" }}>
+            {file.response?.response?.status === "succeed" ? (
+              <CheckCircleFilled
+                style={{ color: filenameColor, width: "10px", stroke: "2px" }}
+              />
+            ) : file.response?.response?.status === "error" ||
+              file.status === "error" ? (
+              <CloseCircleFilled
+                style={{ color: filenameColor, width: "10px", stroke: "2px" }}
+              />
+            ) : (
+              <Loading
+                style={{
+                  width: "10px",
+                  height: "10px",
+                  scale: 1.2,
+                  color: filenameColor,
+                }}
+              />
+            )}
+          </span>
           {file.name}
         </FileNameWrapper>
         <IconWrapper>
@@ -53,28 +77,31 @@ export default function ItemRender({
           )}
         </IconWrapper>
       </ItemRenderWrapper>
-      {showProgress && (
-        <Progress
-          showInfo={false}
-          percent={progress}
-          percentPosition={{ align: "center", type: "outer" }}
-          size="small"
-          strokeColor="#bec0da"
-        />
-      )}
+      <div style={{ marginTop: "-10px", marginBottom: "10px" }}>
+        {showProgress && (
+          <Progress
+            strokeWidth={4}
+            showInfo={false}
+            percent={progress}
+            percentPosition={{ align: "center", type: "outer" }}
+            size="small"
+            strokeColor={filenameColor}
+          />
+        )}
+      </div>
     </div>
   );
 }
 
 const Hover = styled.div`
-  opacity: 0.5;
+  opacity: 0.7;
   &:hover {
     opacity: 1;
   }
 `;
 
 const FileNameWrapper = styled.div`
-  opacity: 0.6;
+  opacity: 0.8;
   cursor: pointer;
   font-weight: 500;
 `;

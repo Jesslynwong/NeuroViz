@@ -1,31 +1,9 @@
-<svg width="100px" height="100px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"
-    preserveAspectRatio="xMidYMid" class="lds-bar-chart" style="">
-    <g transform="rotate(180 50 50)">
-
-        <rect y="15" height="38.086"
-            fill="#8a92da" x="14" width="12">
-            <animate attributeName="height" calcMode="spline" values="50;70;30;50"
-                keyTimes="0;0.33;0.66;1" dur="1" keySplines="0.5 0 0.5 1;0.5 0 0.5 1;0.5 0 0.5 1"
-                begin="-0.4s" repeatCount="indefinite"></animate>
-        </rect>
-        <rect y="15" height="69.7963"
-            fill="#bec0da" x="34" width="12">
-            <animate attributeName="height" calcMode="spline" values="50;70;30;50"
-                keyTimes="0;0.33;0.66;1" dur="1" keySplines="0.5 0 0.5 1;0.5 0 0.5 1;0.5 0 0.5 1"
-                begin="-0.2s" repeatCount="indefinite"></animate>
-        </rect>
-        <rect y="15" height="32.3702"
-            fill="#8ebd0b" x="54" width="12">
-            <animate attributeName="height" calcMode="spline" values="50;70;30;50"
-                keyTimes="0;0.33;0.66;1" dur="1" keySplines="0.5 0 0.5 1;0.5 0 0.5 1;0.5 0 0.5 1"
-                begin="-0.6s" repeatCount="indefinite"></animate>
-        </rect>
-        <rect y="15" height="58.1981"
-            fill="#085421" x="74" width="12">
-            <animate attributeName="height" calcMode="spline" values="50;70;30;50"
-                keyTimes="0;0.33;0.66;1" dur="1" keySplines="0.5 0 0.5 1;0.5 0 0.5 1;0.5 0 0.5 1"
-                begin="0s" repeatCount="indefinite"></animate>
-        </rect>
-
-    </g>
+<svg width="80px" height="80px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"
+    preserveAspectRatio="xMidYMid" class="lds-dual-ring">
+    <circle cx="50" cy="50"
+        fill="none" stroke-linecap="round" r="27" stroke-width="7" stroke="currentColor"
+        stroke-dasharray="42.411500823462205 42.411500823462205" transform="rotate(60 50 50)">
+        <animateTransform attributeName="transform" type="rotate" calcMode="linear"
+            values="0 50 50;360 50 50" keyTimes="0;1" dur="1s" begin="0s" repeatCount="indefinite"></animateTransform>
+    </circle>
 </svg>

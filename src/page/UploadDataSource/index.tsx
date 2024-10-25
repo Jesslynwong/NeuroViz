@@ -6,7 +6,7 @@
  * @FilePath: /dataVis/src/page/Upload/index.ts
  */
 
-import logo from "../../assets/logo1.jpeg";
+import logo from "../../assets/logo_pure.png";
 
 import {
   Button,
@@ -15,15 +15,16 @@ import {
   Upload,
   Spin,
   ConfigProvider,
+  Flex,
 } from "antd";
 
-import { supportedUploadExtension } from "../../config/configuration";
-import styled, { keyframes } from "styled-components";
 import {
-  CheckCircleFilled,
-  CloseCircleFilled,
-  UploadOutlined,
-} from "@ant-design/icons";
+  host,
+  productName,
+  supportedUploadExtension,
+} from "../../config/configuration";
+import styled from "styled-components";
+import { UploadOutlined } from "@ant-design/icons";
 import { createRef, useCallback, useEffect, useMemo, useState } from "react";
 import { UploadFileStatus } from "antd/es/upload/interface";
 import ItemRender from "./ItemRender";
@@ -31,15 +32,8 @@ import { UploadRef } from "antd/es/upload/Upload";
 import { useNavigate } from "react-router-dom";
 import { useGlobalContext } from "../../App";
 import { jsonizeData } from "../../utils";
-import {
-  filterAnimation,
-  SVGWrapper,
-} from "../../components/styled.components";
-import { ReactComponent as Loading } from "../../assets/svgs/loading.svg";
-import { ReactComponent as LogoTexg } from "../../assets/svgs/logo_text.svg";
 import LoadingLogo from "../../components/LoadingLogo";
-
-const host = "http://120.26.49.230:7777";
+import { ReactComponent as Safe } from "../../assets/svgs/safe.svg";
 
 const { Dragger } = Upload;
 const SerilizedFileExtension = supportedUploadExtension
@@ -111,15 +105,14 @@ export default function UploadDataSource() {
       const isCurrentSuccess = currentFile.status === "done";
       const isNewOne = file === fileList[fileList.length - 1];
       const filenameColor = mapStatusToColor({
-        errorColor: "red",
+        errorColor: "#ff7875",
         doneColor:
           file.response?.response?.status === "succeed"
             ? "lightseagreen"
             : file.response?.response?.status === "error"
-            ? "red"
+            ? "#ff7875"
             : undefined,
-        uploadingColor: "black",
-        defaultColor: "black",
+        defaultColor: "#10a3ff",
         status: currentFile.status,
       });
       return (
@@ -128,18 +121,6 @@ export default function UploadDataSource() {
           showProgress={isNewOne && isUploadingWithAnimation}
           progress={progress}
           filenameColor={filenameColor}
-          slot={
-            file.response?.response?.status === "succeed" ? (
-              <CheckCircleFilled
-                style={{ color: filenameColor, width: "10px", stroke: "2px" }}
-              />
-            ) : file.response?.response?.status === "error" ||
-              file.status === "error" ? (
-              <CloseCircleFilled
-                style={{ color: filenameColor, width: "10px", stroke: "2px" }}
-              />
-            ) : undefined
-          }
           onDelete={() =>
             setFl(fileList.filter((v) => v !== fileList[currentIndex]))
           }
@@ -229,7 +210,7 @@ export default function UploadDataSource() {
   };
 
   useEffect(() => {
-    if (processingUid) {
+    if (processingUid !== null) {
       loadReport();
     }
   }, [processingUid]);
@@ -244,100 +225,118 @@ export default function UploadDataSource() {
         },
       }}
     >
-      <LogoWrapper>
-        <StyledLogo />
-      </LogoWrapper>
-      <UploadWrapper>
-        {/* <Spin spinning={!!processingUid} tip={"Processing"} > */}
-        <Spin
-          spinning={true}
-          // tip={<LogoTexg />}
-          tip={<LoadingLogo />}
-          indicator={
-            <>
-              <Loading width={"100px"} height={"100px"} fontSize={"100px"} />
-            </>
-          }
-        >
-          <DraggerWrapper>
-            <Dragger
-              ref={inputController}
-              {...uploadProps}
-              style={{
-                // borderColor: mapStatusToColor({ defaultColor: "#bec0da" }),
-                borderWidth: "2px",
-              }}
-            >
-              <div>
-                <StyledButton
-                  loading={isUploadingWithAnimation}
-                  icon={<UploadOutlined />}
-                  size="large"
-                >
-                  {isUploadingWithAnimation
-                    ? "uploading"
-                    : "Click or drag file to this area to upload"}
-                </StyledButton>
+      <Wrapper>
+        <LogoWrapper>
+          <StyledLogo />
+        </LogoWrapper>
 
-                <div>
-                  <p
-                    className="ant-upload-hint"
-                    style={{
-                      color: mapStatusToColor({ defaultColor: "#bec0da" }),
-                    }}
-                  >
-                    Support for an excel file upload with subfix "
-                    {SerilizedFileExtension}
-                    ".
-                    <br />
-                    Strictly prohibited from uploading company data or other
-                    banned files.
-                  </p>
-                </div>
+        <DraggerWrapper>
+          <Dragger
+            ref={inputController}
+            {...uploadProps}
+            style={{
+              borderWidth: "2px",
+            }}
+          >
+            <div>
+              <StyledButton
+                loading={isUploadingWithAnimation}
+                icon={<UploadOutlined style={{ fontSize: "24px" }} />}
+                size="large"
+              >
+                {isUploadingWithAnimation
+                  ? "uploading"
+                  : "Click or drag file to this area to upload"}
+              </StyledButton>
+
+              <div>
+                <p
+                  className="ant-upload-hint"
+                  style={{
+                    color: mapStatusToColor({ defaultColor: "#a0a2ba" }),
+                  }}
+                >
+                  Support for an excel file upload with subfix "
+                  {SerilizedFileExtension}
+                  ".
+                  <br />
+                  Strictly prohibited from uploading company data or other
+                  banned files.
+                </p>
               </div>
-            </Dragger>
-          </DraggerWrapper>
-        </Spin>
-      </UploadWrapper>
+            </div>
+          </Dragger>
+        </DraggerWrapper>
+
+        <Flex gap="small" align="center" style={{ marginTop: "32px" }}>
+          <Safe />
+          <Flex
+            vertical
+            style={{ fontSize: "12px", color: "#333", opacity: 0.9 }}
+          >
+            <div>
+              Your files will be securely handled by {productName} servers and
+              deleted.
+            </div>
+            <div>
+              <span>
+                By using this service, you agree to the {productName}{" "}
+              </span>
+              <a>Terms of Use</a>
+              <span> and </span>
+              <a>Privacy Policy</a>.
+            </div>
+          </Flex>
+        </Flex>
+      </Wrapper>
+
+      <Spin
+        spinning={processingUid !== null}
+        fullscreen
+        indicator={
+          <>
+            <LoadingLogo />
+          </>
+        }
+      />
     </ConfigProvider>
   );
 }
 
-const DraggerWrapper = styled.div`
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
-  height: 200px;
-  &:hover > span > div {
-    background-color: rgba(199, 199, 199, 0.2);
-  }
 `;
 
-const UploadWrapper = styled.section`
-  display: flex;
-  justify-content: center;
-  > div {
-    width: 68%;
-    max-width: 750px;
-  }
+const DraggerWrapper = styled.section`
+  width: 66%;
+  height: 200px;
+  min-width: 200px;
+  > span {
+    > div:nth-of-type(1):hover {
+      background-color: rgba(199, 199, 199, 0.2);
+    }
 
-  /* animation: ${filterAnimation} 4s ease infinite; */
+    > div:nth-of-type(2) > div:hover {
+      background-color: rgba(199, 199, 199, 0.2);
+    }
+  }
 `;
 
 const LogoWrapper = styled.section`
-  display: flex;
-  justify-content: center;
   position: relative;
-  margin-bottom: -68px;
-  opacity: 0.6;
 `;
 
 const StyledLogo = styled.div`
-  width: 500px;
-  height: 400px;
+  margin: 36px 0;
+  width: 260px;
+  height: 260px;
   background-size: contain;
   background-repeat: no-repeat;
   cursor: pointer;
   background-image: url(${logo});
-  /* animation: ${filterAnimation} 4s ease infinite; */
 `;
 
 const StyledButton = styled(Button)`
@@ -345,4 +344,5 @@ const StyledButton = styled(Button)`
   background-color: #bec0da;
   color: white;
   font-weight: bolder;
+  padding: 24px 36px;
 `;
