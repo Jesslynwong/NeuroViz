@@ -6,34 +6,36 @@
  * @FilePath: /dataVis/src/page/Layout/index.tsx
  */
 import { Layout, Menu } from "antd";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 
 import logo from "../../assets/logo_pure.png";
 import logoText from "../../assets/logo_text.png";
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 import { departmentName, productName } from "../../config/configuration";
 import { filterAnimation } from "../../components/styled.components";
 
 const { Header, Content, Footer } = Layout;
 
-const items = [
-  {
-    key: 1,
-    label: "Tools",
-  },
-  {
-    key: 2,
-    label: "Report",
-  },
-  {
-    key: 3,
-    label: "About Us",
-  },
-];
-
 export default function MainLayout() {
+  const navigate = useNavigate();
+  const items: Parameters<typeof Menu>[0]["items"] = [
+    {
+      key: 1,
+      label: "Tools",
+      onClick: () => navigate("/"),
+    },
+    {
+      key: 2,
+      label: "Report",
+    },
+    {
+      key: 3,
+      label: "About Us",
+    },
+  ];
+
   return (
-    <Layout style={{ height: "100vh" }}>
+    <Layout style={{ minHeight: "100vh" }}>
       <StyledHeader>
         <StyledLogo />
         <StyledLogoText />

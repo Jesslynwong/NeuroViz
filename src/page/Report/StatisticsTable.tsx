@@ -1,5 +1,5 @@
 import { FullscreenExitOutlined, FullscreenOutlined } from "@ant-design/icons";
-import { Badge, Table, TableProps, Tooltip } from "antd";
+import { Table, TableProps, Tooltip } from "antd";
 import styled from "styled-components";
 import RowRadarChart from "./RowRadarChart";
 import { Item, JsonReport, ResponsedObject } from ".";
@@ -7,7 +7,6 @@ import starEmpty from "../../assets/svgs/star_empty.svg";
 import star from "../../assets/svgs/star_02.svg";
 import axisX from "../../assets/svgs/axis_x.svg";
 import axisY from "../../assets/svgs/axis_y.svg";
-import extra from "../../assets/svgs/extra.svg";
 import { ReactComponent as Discrete } from "../../assets/svgs/discrete.svg";
 import { StyledImg } from "../../components/styled.components";
 
@@ -53,7 +52,7 @@ export default function StatisticsTable({
           ) : y_axis_field.includes(text) ? (
             <StyledImg width="24px" heigh="24px" src={axisY} alt="axis_y" />
           ) : (
-            ""
+            "-"
           )}
         </StyledAxisField>
       ),
