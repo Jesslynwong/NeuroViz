@@ -195,19 +195,24 @@ export default function UploadDataSource() {
     if (!matchFile) {
       return message.error("Unexpected error!");
     }
-    const response: { json_report: string; json_source: string } =
-      await rawRes.json();
+    const response: {
+      json_report: string;
+      json_source: string;
+      corr_comment: string;
+    } = await rawRes.json();
 
     if (rawRes.status === 200) {
       response.json_report = jsonizeData(response.json_report);
       response.json_source = jsonizeData(response.json_source);
+      response.corr_comment = jsonizeData(response.corr_comment);
       matchFile.response = {
         ...(matchFile.response ?? {}),
         response,
       };
+      console.log(matchFile.response);
       goCheckReport(matchFile.uid);
     } else {
-      message.error("Fail to process your file!")
+      message.error("Fail to process your file!");
       matchFile.response = {
         ...(matchFile.response ?? {}),
         response,

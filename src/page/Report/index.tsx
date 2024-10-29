@@ -56,6 +56,29 @@ export type JsonReport<T extends string = string> = {
 
 export type JsonSource = { [key: string]: number | string };
 
+export type AxisRangePoint = {
+  x_range_point: number[];
+  y_range_point: number[];
+};
+
+export type ImgRange<T extends string = string> = {
+  Kmean_img_range: {
+    [K in T]: AxisRangePoint;
+  };
+  histogram_img_range: {
+    [K in T]: AxisRangePoint;
+  };
+  line_img_range: {
+    [K in T]: AxisRangePoint;
+  };
+  pie_img_range: {
+    [K in T]: AxisRangePoint;
+  };
+  scatter_img_range: {
+    [K in T]: AxisRangePoint;
+  };
+};
+
 export type RelationShipInsight = {
   Insight: string;
   Insight_No: string;
@@ -73,6 +96,7 @@ export interface ResponsedObject<T extends string = string> {
   json_report: JsonReport<T>;
   json_source: JsonSource;
   start_count: { [K in T]: number };
+  Img_range: ImgRange<T>;
   corr_comment: {
     target_variables: {
       [K in T]: {
@@ -99,6 +123,7 @@ export default function Report() {
       json_source: jsonizeData(template.json_source),
       start_count: template.start_count,
       corr_comment: jsonizeData(template.corr_comment),
+      Img_range: template.Img_range,
     } as ResponsedObject;
     return matchedFile?.response.response as ResponsedObject;
   }, [fileList, uid]);
