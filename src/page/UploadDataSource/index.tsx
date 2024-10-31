@@ -6,7 +6,7 @@
  * @FilePath: /dataVis/src/page/Upload/index.ts
  */
 
-import logo from "../../assets/logo_pure.png";
+import { ReactComponent as Title } from "../../assets/svgs/title.svg";
 
 import {
   Button,
@@ -238,9 +238,18 @@ export default function UploadDataSource() {
       }}
     >
       <Wrapper>
-        <LogoWrapper>
-          <StyledLogo />
-        </LogoWrapper>
+        <Flex
+          align="center"
+          justify="center"
+          vertical
+          style={{ height: "320px", marginBottom: "48px" }}
+        >
+          <TitleWrapper>
+            <Title />
+          </TitleWrapper>
+
+          <SubTitle>One - Step Data Analyzer For all purpose</SubTitle>
+        </Flex>
 
         <DraggerWrapper>
           <Dragger
@@ -331,9 +340,27 @@ const Wrapper = styled.div`
   width: 100%;
 `;
 
+const TitleWrapper = styled.div`
+  display: inline-block;
+  text-align: center;
+  vertical-align: bottom;
+  width: 100%;
+  height: 100%;
+  scale: 1.4;
+`;
+
+const SubTitle = styled.span`
+  font-family: Fustat, Menlo, Monaco, Consolas, "Courier New";
+  font-weight: 700;
+  font-size: 32px;
+  color: #1c2f40;
+  opacity: 0.6;
+`;
+
 const DraggerWrapper = styled.section`
   width: 66%;
   min-width: 200px;
+  background-color: rgba(245, 245, 245, 0.3);
   > span {
     > div:nth-of-type(1):hover {
       background-color: rgba(199, 199, 199, 0.2);
@@ -343,20 +370,6 @@ const DraggerWrapper = styled.section`
       background-color: rgba(199, 199, 199, 0.2);
     }
   }
-`;
-
-const LogoWrapper = styled.section`
-  position: relative;
-`;
-
-const StyledLogo = styled.div`
-  margin: 24px 0;
-  width: 260px;
-  height: 260px;
-  background-size: contain;
-  background-repeat: no-repeat;
-  cursor: pointer;
-  background-image: url(${logo});
 `;
 
 const StyledButton = styled(Button)`

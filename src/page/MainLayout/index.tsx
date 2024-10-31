@@ -10,6 +10,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 
 import logo from "../../assets/logo_pure.png";
 import logoText from "../../assets/logo_text.png";
+import background from "../../assets/background.png";
 import styled from "styled-components";
 import { departmentName, productName } from "../../config/configuration";
 import { filterAnimation } from "../../components/styled.components";
@@ -36,7 +37,7 @@ export default function MainLayout() {
   ];
 
   return (
-    <Layout style={{ minHeight: "100vh" }}>
+    <StyledLayout>
       <StyledHeader>
         <StyledLogo />
         <StyledLogoText />
@@ -53,21 +54,31 @@ export default function MainLayout() {
           <GithubOutlined style={{ cursor: "pointer", fontSize: "20px" }} />
         </a>
       </StyledHeader>
-      <Content>
+      <StyledContent>
         <Outlet />
-      </Content>
-      <Footer style={{ textAlign: "center" }}>
+      </StyledContent>
+      <Footer style={{ textAlign: "center", background: "none" }}>
         {productName} ©{new Date().getFullYear()} Created by {departmentName}
       </Footer>
-    </Layout>
+    </StyledLayout>
   );
 }
+
+const StyledLayout = styled(Layout)`
+  background-image: url(${background});
+  background-repeat: no-repeat;
+  background-size: 120% auto;
+  background-color: transparent;
+  min-height: 100vh;
+`;
 
 const StyledLogo = styled.img.attrs({ src: logo, alt: "logo" })`
   height: 36px;
   cursor: pointer;
   animation: ${filterAnimation} 3s ease-in-out 0s infinite;
 `;
+
+const StyledContent = styled(Content)``;
 
 const StyledLogoText = styled.img.attrs({ src: logoText, alt: "NeuroViz" })`
   margin-left: 8px;
