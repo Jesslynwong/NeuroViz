@@ -15,38 +15,21 @@ import DistributiveBarChart, {
   BarChartDataProps,
 } from "./DistributionBarChart";
 import DistributionScatterChart from "./DistributionScatterChart";
-import { JsonSource } from "./index";
+import { JsonSource, ResponsedObject } from "./index";
 import { getColor } from "../../utils/colors";
 const attrs = ["deposit", "age", "liability"];
-const mockdata: BarChartDataProps[] = [
-  {
-    xAxisLabel: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-    yValue: [120, 200, 150, 80, 70, 110, 130, 120, 210, 110, 210],
-  },
-  {
-    xAxisLabel: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-    yValue: [120, 200, 150, 80, 70, 110, 130, 120, 210],
-  },
-  {
-    xAxisLabel: [0, 1, 2, 3, 4, 5, 6, 7],
-    yValue: [120, 200, 150, 80, 70, 110, 130],
-  },
-  {
-    xAxisLabel: [0, 1, 2, 3, 4, 5, ],
-    yValue: [120, 200, 150, 80, 70],
-  },
-];
 
 interface DistributiveTabProps {
   dataSource: {
-    rawData: JsonSource;
+    rawData: ResponsedObject["json_source"];
     xAxisLabel: string[];
     yAxisLabel: string;
+    imgRange: ResponsedObject["Img_range"];
   };
 }
 export default function DistributiveTab({ dataSource }: DistributiveTabProps) {
-  const { rawData, xAxisLabel, yAxisLabel } = dataSource;
-  const selectiveAttr: string[] = [...xAxisLabel, yAxisLabel];
+  const { rawData, xAxisLabel, yAxisLabel, imgRange } = dataSource;
+  const selectiveAttr: string[] = [...xAxisLabel];
   const [selectedNameIdx, setSelectedNameIdx] = useState(0);
   // attrs
   const items: MenuProps["items"] = selectiveAttr.map((val, idx) => {
@@ -66,6 +49,21 @@ export default function DistributiveTab({ dataSource }: DistributiveTabProps) {
     const mergedArray = x.map((value, index) => [value, y[index]]);
     return mergedArray;
   };
+
+  const getBarChartData = () => {
+    const matched =
+      imgRange.histogram_img_range[selectiveAttr[selectedNameIdx]];
+    return {
+      xAxisLabel: matched.x_range_point,
+      yValue: matched.group,
+      yAxisTitle: yAxisLabel,
+      source: get2Darr(
+        rawData[selectiveAttr[selectedNameIdx]] as unknown as Cal2Darr,
+        rawData[yAxisLabel] as unknown as Cal2Darr
+      ),
+    };
+  };
+
   return (
     <>
       <Dropdown menu={{ items }}>
@@ -77,18 +75,19 @@ export default function DistributiveTab({ dataSource }: DistributiveTabProps) {
         </a>
       </Dropdown>
       {/* use other api data */}
-      <DistributiveBarChart data={mockdata[selectedNameIdx]} color={getColor(selectedNameIdx)}/>
-      {selectedNameIdx !== selectiveAttr.length - 1 && (
-        <DistributionScatterChart
-          data={get2Darr(
-            rawData[selectiveAttr[selectedNameIdx]] as unknown as Cal2Darr,
-            rawData[yAxisLabel] as unknown as Cal2Darr
-          )}
-          xAxisTitle={xAxisLabel[selectedNameIdx]}
-          yAxisTitle={yAxisLabel}
-          color={getColor(selectedNameIdx)}
-        />
-      )}
+      <DistributiveBarChart
+        data={getBarChartData()}
+        color={getColor(selectedNameIdx)}
+      />
+      <DistributionScatterChart
+        data={get2Darr(
+          rawData[selectiveAttr[selectedNameIdx]] as unknown as Cal2Darr,
+          rawData[yAxisLabel] as unknown as Cal2Darr
+        )}
+        xAxisTitle={xAxisLabel[selectedNameIdx]}
+        yAxisTitle={yAxisLabel}
+        color={getColor(selectedNameIdx)}
+      />
     </>
   );
 }

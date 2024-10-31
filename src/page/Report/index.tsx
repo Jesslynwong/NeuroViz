@@ -54,7 +54,9 @@ export type JsonReport<T extends string = string> = {
   };
 };
 
-export type JsonSource = { [key: string]: number | string };
+export type JsonSource<T extends string = string> = {
+  [K in T]: Record<number, string | number>;
+};
 
 export type AxisRangePoint = {
   x_range_point: number[];
@@ -66,7 +68,7 @@ export type ImgRange<T extends string = string> = {
     [K in T]: AxisRangePoint;
   };
   histogram_img_range: {
-    [K in T]: AxisRangePoint;
+    [K in T]: AxisRangePoint & { group: number[] };
   };
   line_img_range: {
     [K in T]: AxisRangePoint;
@@ -94,7 +96,7 @@ export interface ResponsedObject<T extends string = string> {
   status: string;
   message: string;
   json_report: JsonReport<T>;
-  json_source: JsonSource;
+  json_source: JsonSource<T>;
   start_count: { [K in T]: number };
   Img_range: ImgRange<T>;
   corr_comment: {
@@ -116,17 +118,19 @@ export default function Report() {
     const matchedFile = fileList.find((file) => file.uid === uid);
 
     // todo: remove local mock data
-    return {
-      status: "succeed",
-      message: "message",
-      json_report: jsonizeData(template.json_report),
-      json_source: jsonizeData(template.json_source),
-      start_count: template.start_count,
-      corr_comment: jsonizeData(template.corr_comment),
-      Img_range: template.Img_range,
-    } as ResponsedObject;
+    // return {
+    //   status: "succeed",
+    //   message: "message",
+    //   json_report: jsonizeData(template.json_report),
+    //   json_source: jsonizeData(template.json_source),
+    //   start_count: template.start_count,
+    //   corr_comment: jsonizeData(template.corr_comment),
+    //   Img_range: template.Img_range,
+    // } as ResponsedObject;
     return matchedFile?.response.response as ResponsedObject;
   }, [fileList, uid]);
+
+  console.log(">> fileResponse: ", fileResponse);
 
   const navigate = useNavigate();
 
@@ -162,6 +166,7 @@ export default function Report() {
             rawData: fileResponse.json_source,
             xAxisLabel: report.analysis_results.x_axis_fields,
             yAxisLabel: report.analysis_results.y_axis_field,
+            imgRange: fileResponse.Img_range,
           }}
         />
       ),
