@@ -2,7 +2,7 @@
  * @Author: Jesslynwong jesslynwjx@gmail.com
  * @Date: 2024-09-13 14:17:57
  * @LastEditors: Jesslynwong jesslynwjx@gmail.com
- * @LastEditTime: 2024-10-31 10:29:10
+ * @LastEditTime: 2024-10-31 16:58:03
  * @FilePath: /dataVis/src/page/Layout/index.tsx
  */
 import { Layout, Menu } from "antd";
@@ -48,7 +48,7 @@ export default function MainLayout() {
           style={{ marginLeft: "10px" }}
         />
         <a
-          href="https://github.com/Jiansennnnn/NeuroViz"
+          href="https://github.com/Jesslynwong/NeuroViz"
           style={{ marginLeft: "auto", color: "inherit" }}
         >
           <GithubOutlined style={{ cursor: "pointer", fontSize: "20px" }} />
