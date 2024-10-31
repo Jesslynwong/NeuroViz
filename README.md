@@ -2,17 +2,13 @@
  * @Author: Jesslynwong jesslynwjx@gmail.com
  * @Date: 2024-10-10 10:14:15
  * @LastEditors: Jesslynwong jesslynwjx@gmail.com
- * @LastEditTime: 2024-10-31 14:08:04
+ * @LastEditTime: 2024-10-31 16:37:46
  * @FilePath: /dataVis/README.md
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
-# ✨ dataVis
+# NeuroVis
 
-![Logo_white]("./../src/assets/logo_pure.png")
-
-# 在线数据分析工具 
-
-**✨** 欢迎使用我们的在线数据分析工具！本工具基于数据科学和大模型研发，旨在为企业和用户提供便捷、友好的数据处理解决方案。无论您是数据分析师、企业决策者，还是对数据科学感兴趣的用户，我们的工具都能帮助您更高效地处理各种业务场景下的数据。 
+✨ 欢迎使用我们的在线数据分析工具！本工具基于数据科学和大模型研发，旨在为企业和用户提供便捷、友好的数据处理解决方案。无论您是数据分析师、企业决策者，还是对数据科学感兴趣的用户，我们的工具都能帮助您更高效地处理各种业务场景下的数据。 
 
 ## 🚀 特性 
 
@@ -40,9 +36,6 @@
 
 ## 📲 联系我们
 
-如果您有任何问题或反馈，可以通过提 PR 与我们联系。
+如果您有任何问题或反馈，可以通过提交 PR 与我们联系。
 
 💕您使用我们的在线数据分析工具，期待它能帮助您在数据科学和分析领域取得更好的成果！
-
-
-
