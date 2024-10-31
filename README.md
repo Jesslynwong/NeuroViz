@@ -2,7 +2,7 @@
  * @Author: Jesslynwong jesslynwjx@gmail.com
  * @Date: 2024-10-10 10:14:15
  * @LastEditors: Jesslynwong jesslynwjx@gmail.com
- * @LastEditTime: 2024-10-31 16:37:46
+ * @LastEditTime: 2024-10-31 17:29:08
  * @FilePath: /dataVis/README.md
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -25,6 +25,20 @@
 ✅ **多业务场景**：支持多种业务场景，灵活应对不同的数据需求。 
 
 ✅ **多数据源拓展性**：兼容多种数据源，轻松集成现有的数据系统。
+
+## 🧑‍🏫 安装与使用 
+
+```shell
+## frontend
+cd ./Frontend
+npm i
+npm run start
+
+## backend
+cd ./Backend
+pip install -r ./requirements.txt
+python ./flask_app.py
+```
 
 ## 💎 贡献
 
