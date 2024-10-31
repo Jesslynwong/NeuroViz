@@ -2,7 +2,7 @@
  * @Author: Jesslynwong jesslynwjx@gmail.com
  * @Date: 2024-09-13 14:17:57
  * @LastEditors: Jesslynwong jesslynwjx@gmail.com
- * @LastEditTime: 2024-10-10 14:39:48
+ * @LastEditTime: 2024-10-31 10:29:10
  * @FilePath: /dataVis/src/page/Layout/index.tsx
  */
 import { Layout, Menu } from "antd";
@@ -13,6 +13,7 @@ import logoText from "../../assets/logo_text.png";
 import styled from "styled-components";
 import { departmentName, productName } from "../../config/configuration";
 import { filterAnimation } from "../../components/styled.components";
+import { GithubOutlined } from "@ant-design/icons";
 
 const { Header, Content, Footer } = Layout;
 
@@ -45,6 +46,12 @@ export default function MainLayout() {
           items={items}
           style={{ marginLeft: "10px" }}
         />
+        <a
+          href="https://github.com/Jiansennnnn/NeuroViz"
+          style={{ marginLeft: "auto", color: "inherit" }}
+        >
+          <GithubOutlined style={{ cursor: "pointer", fontSize: "20px" }} />
+        </a>
       </StyledHeader>
       <Content>
         <Outlet />
