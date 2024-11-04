@@ -118,15 +118,15 @@ export default function Report() {
     const matchedFile = fileList.find((file) => file.uid === uid);
 
     // todo: remove local mock data
-    // return {
-    //   status: "succeed",
-    //   message: "message",
-    //   json_report: jsonizeData(template.json_report),
-    //   json_source: jsonizeData(template.json_source),
-    //   start_count: template.start_count,
-    //   corr_comment: jsonizeData(template.corr_comment),
-    //   Img_range: template.Img_range,
-    // } as ResponsedObject;
+    return {
+      status: "succeed",
+      message: "message",
+      json_report: jsonizeData(template.json_report),
+      json_source: jsonizeData(template.json_source),
+      start_count: template.start_count,
+      corr_comment: jsonizeData(template.corr_comment),
+      Img_range: template.Img_range,
+    } as ResponsedObject;
     return matchedFile?.response.response as ResponsedObject;
   }, [fileList, uid]);
 
