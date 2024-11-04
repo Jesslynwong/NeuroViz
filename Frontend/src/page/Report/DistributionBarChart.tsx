@@ -28,6 +28,7 @@ export interface DistributionBarChartProps {
     source: number[][];
   };
   color: string;
+  showLabel?: boolean;
 }
 
 export type BarChartDataProps = DistributionBarChartProps["data"];
@@ -35,11 +36,12 @@ export type BarChartDataProps = DistributionBarChartProps["data"];
 export default function DistributionBarChart({
   data,
   color,
+  showLabel,
 }: DistributionBarChartProps) {
   return (
     <ReactEChartsCore
       echarts={echarts}
-      option={getOption(data, color, 20)}
+      option={getOption(data, color, 20, showLabel)}
       notMerge={true}
       lazyUpdate={true}
       theme={"theme_name"}
@@ -47,7 +49,12 @@ export default function DistributionBarChart({
   );
 }
 
-function getOption(data: BarChartDataProps, color: string, barCount: number) {
+function getOption(
+  data: BarChartDataProps,
+  color: string,
+  barCount: number,
+  showLabel?: boolean
+) {
   const sortedDataSource = [...data.source].sort((a, b) => a[0] - b[0]);
   const sortedAxisSource = sortedDataSource.map((v) => v[0]);
 
@@ -68,7 +75,6 @@ function getOption(data: BarChartDataProps, color: string, barCount: number) {
   );
   xAxisLabel.push(axisMax);
 
-  console.log(">> xAxisLabel: ", xAxisLabel);
   const yAxisArr: number[] = [];
   const averageArr: number[] = [];
 
@@ -176,6 +182,12 @@ function getOption(data: BarChartDataProps, color: string, barCount: number) {
       {
         name: "Frequence",
         data: frequenceArr,
+        label: {
+          show: showLabel,
+          formatter: function (params: any) {
+            return params.value.toFixed(2);
+          },
+        },
         type: "bar",
         xAxisIndex: 0,
       },
@@ -184,6 +196,12 @@ function getOption(data: BarChartDataProps, color: string, barCount: number) {
         type: "line",
         yAxisIndex: 1,
         data: yAxisArr,
+        label: {
+          show: showLabel,
+          formatter: function (params: any) {
+            return params.value;
+          },
+        },
       },
       {
         name: "Average",

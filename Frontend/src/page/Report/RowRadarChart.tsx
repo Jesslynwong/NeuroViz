@@ -38,7 +38,7 @@ export default function RowRadarChart({
   corr_comment,
 }: RowRadarChartProps) {
   const option = useMemo(() => {
-    return getChartOption(fieldToShow, correlation_matrix);
+    return getRadarChartOption(fieldToShow, correlation_matrix);
   }, [correlation_matrix, fieldToShow]);
 
   const [activeAction, setActiveAction] = useState<Action>("description");
@@ -178,9 +178,10 @@ const CommentWrapper = styled.div`
   overflow: scroll;
 `;
 
-const getChartOption = (
+export const getRadarChartOption = (
   field: RowRadarChartProps["fieldToShow"],
-  matrix: RowRadarChartProps["correlation_matrix"]
+  matrix: RowRadarChartProps["correlation_matrix"],
+  showLable?: boolean
 ) => {
   const fields = Object.keys(matrix).filter((f) => f !== field);
   const indicator = fields.map((v) => ({
@@ -216,7 +217,7 @@ const getChartOption = (
       {
         name: "correlation_matrix",
         type: "radar",
-        symbol: "none",
+        symbol: showLable ? "rect" : "none",
         lineStyle: {
           width: 1,
         },
@@ -229,9 +230,22 @@ const getChartOption = (
           {
             value: fields.map((v) => matrix[field][v]),
             name: field,
+            label: {
+              show: showLable,
+              formatter: function (params: any) {
+                return params.value;
+              },
+            },
           },
         ],
       },
     ],
+    animation: !showLable,
+
+    ...(showLable
+      ? {
+          color: ["#56A3F1", "#67F9D8", "#FFE434", "#FF917C"],
+        }
+      : {}),
   };
 };

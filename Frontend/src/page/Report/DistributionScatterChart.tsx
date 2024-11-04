@@ -35,10 +35,6 @@ export default function DistributionScatterChart({
       option={getOption(data, xAxisTitle, yAxisTitle, color)}
       notMerge={true}
       lazyUpdate={true}
-      theme={"theme_name"}
-      //   onChartReady={this.onChartReadyCallback}
-      //   onEvents={EventsDict}
-      //   opts={}
     />
   );
 }
