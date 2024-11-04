@@ -1,3 +1,4 @@
+import * as echarts from "echarts/core";
 import { Button, Card, ConfigProvider, message, Tabs, TabsProps } from "antd";
 import styled from "styled-components";
 import Ideas from "./IdeasTab";
@@ -7,8 +8,11 @@ import DistributiveTab from "./DistributiveTab";
 
 import template from "../../stubs/template.json";
 import { useGlobalContext } from "../../App";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { jsonizeData } from "../../utils";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
+import { getRadarChartOption } from "./RowRadarChart";
 
 export type Item = {
   count: number;
@@ -113,6 +117,7 @@ export interface ResponsedObject<T extends string = string> {
 export default function Report() {
   const { uid } = useParams();
   const { fileList, setFileList } = useGlobalContext();
+  const offscreenChartRefs = useRef<HTMLDivElement[]>([]);
 
   const fileResponse = useMemo(() => {
     const matchedFile = fileList.find((file) => file.uid === uid);
@@ -133,6 +138,163 @@ export default function Report() {
   console.log(">> fileResponse: ", fileResponse);
 
   const navigate = useNavigate();
+
+  async function generateRadarChartImageAndDescription() {
+    const canvas = document.createElement("canvas");
+    canvas.width = 800;
+    canvas.height = 480;
+
+    const chart = echarts.init(canvas);
+
+    const radarFieldNames = Object.keys(
+      fileResponse.json_report.report.analysis_results.descriptive_statistics
+    );
+
+    const data: {
+      [K in string]: {
+        img: string;
+      } & ResponsedObject["corr_comment"]["target_variables"][string];
+    } = {};
+    for await (const element of radarFieldNames) {
+      const option = getRadarChartOption(
+        element,
+        fileResponse.json_report.report.analysis_results.correlation_matrix,
+        true
+      );
+
+      const targetVariables =
+        fileResponse.corr_comment.target_variables[element];
+
+      chart.setOption(option);
+      const chartImage = chart.getDataURL({
+        type: "png",
+      });
+      data[element] = {
+        img: chartImage,
+        ...targetVariables,
+      };
+    }
+
+    return [data, canvas.width, canvas.height] as const;
+  }
+
+  const exportPDF = async () => {
+    const table = document.querySelector("table");
+    if (table) {
+      try {
+        const canvas = await html2canvas(table as HTMLElement, { scale: 1 });
+
+        const pdf = new jsPDF({
+          orientation: canvas.width > canvas.height ? "landscape" : "portrait",
+          unit: "px",
+          format: "a1",
+        });
+
+        const pageHeight = pdf.internal.pageSize.height;
+        const pageWidth = pdf.internal.pageSize.width;
+        const marginLeft = 10;
+        const marginTop = 20;
+        const subTitleFontSize = 48;
+        const textFontSize = 10;
+        let yPosition = 20;
+
+        const placeHeight = (target: number) => {
+          yPosition += target + marginTop;
+          if (yPosition > pageHeight) {
+            pdf.addPage();
+            yPosition = target + marginTop;
+          }
+          return yPosition - target;
+        };
+
+        const newPage = () => {
+          yPosition = marginTop;
+          pdf.addPage();
+        };
+
+        pdf.setFontSize(subTitleFontSize);
+        pdf.setFont("helvetica", "bold");
+
+        pdf.text("Statistic", marginLeft, placeHeight(subTitleFontSize));
+
+        const image = canvas.toDataURL("image/png");
+        pdf.addImage(
+          image,
+          "PNG",
+          marginLeft,
+          placeHeight(canvas.height),
+          canvas.width,
+          canvas.height
+        );
+
+        const [chartData, chartImageWidth, chartImageHeight] =
+          await generateRadarChartImageAndDescription();
+
+        Object.entries(chartData).forEach(([field, data]) => {
+          const currentY = placeHeight(chartImageHeight);
+          const { img, ...rest } = data;
+          pdf.addImage(
+            img,
+            "PNG",
+            marginLeft,
+            currentY,
+            chartImageWidth,
+            chartImageHeight
+          );
+          if (rest.explanation) {
+            const jsonString = JSON.stringify(rest, null, 2);
+            pdf.setFontSize(textFontSize);
+            pdf.setFont("helvetica", "normal");
+            pdf.text(
+              jsonString,
+              2 * marginLeft + chartImageWidth,
+              currentY + subTitleFontSize + marginTop,
+              { maxWidth: pageWidth - (3 * marginLeft + chartImageWidth) }
+            );
+          }
+        });
+
+        newPage();
+        pdf.setFontSize(subTitleFontSize);
+        pdf.setFont("helvetica", "bold");
+        pdf.text(
+          "Factor Distribution",
+          marginLeft,
+          placeHeight(subTitleFontSize)
+        );
+
+        for await (const element of offscreenChartRefs.current) {
+          const canvas = await html2canvas(element, { scale: 1 });
+          const imgData = canvas.toDataURL("image/png");
+          pdf.addImage(
+            imgData,
+            "PNG",
+            marginLeft,
+            placeHeight(canvas.height),
+            canvas.width,
+            canvas.height
+          );
+        }
+
+        newPage();
+        pdf.text("Ideas", marginLeft, 2 * marginTop);
+        const jsonString = JSON.stringify(
+          fileResponse.json_report.Ideas,
+          null,
+          2
+        );
+        pdf.setFontSize(16);
+        pdf.setFont("helvetica", "normal");
+        pdf.text(jsonString, marginLeft, 3 * marginTop + subTitleFontSize, {
+          maxWidth: pageWidth - 2 * marginLeft,
+        });
+
+        pdf.save("image.pdf");
+      } catch (error) {
+        message.error("Something wrong!");
+      }
+    }
+  };
 
   if (!fileResponse) {
     setFileList(fileList.filter((v) => v.uid !== uid));
@@ -201,10 +363,35 @@ export default function Report() {
             defaultActiveKey="1"
             items={items}
             tabBarExtraContent={
-              <StyledButton onClick={() => navigate("/")}>Back</StyledButton>
+              <div>
+                <StyledButton onClick={() => navigate("/")}>Back</StyledButton>
+                <StyledButton
+                  style={{ marginLeft: "12px" }}
+                  onClick={exportPDF}
+                >
+                  Export
+                </StyledButton>
+              </div>
             }
           />
         </Card>
+        {report.analysis_results.x_axis_fields.map((_, i) => (
+          <DistributiveTab
+            ref={(ref) => {
+              if (ref) {
+                offscreenChartRefs.current[i] = ref;
+              }
+            }}
+            exportPDF={true}
+            exportIndex={i}
+            dataSource={{
+              rawData: fileResponse.json_source,
+              xAxisLabel: report.analysis_results.x_axis_fields,
+              yAxisLabel: report.analysis_results.y_axis_field,
+              imgRange: fileResponse.Img_range,
+            }}
+          />
+        ))}
       </ConfigProvider>
     </ReportWrapper>
   );

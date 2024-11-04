@@ -209,7 +209,6 @@ export default function UploadDataSource() {
         ...(matchFile.response ?? {}),
         response,
       };
-      console.log(matchFile.response);
       goCheckReport(matchFile.uid);
     } else {
       message.error("Fail to process your file!");
