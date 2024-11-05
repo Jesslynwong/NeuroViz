@@ -2,7 +2,7 @@
  * @Author: Jesslynwong jesslynwjx@gmail.com
  * @Date: 2024-09-12 17:07:51
  * @LastEditors: Jesslynwong jesslynwjx@gmail.com
- * @LastEditTime: 2024-10-31 10:56:22
+ * @LastEditTime: 2024-11-05 11:23:55
  * @FilePath: /dataVis/src/page/Upload/index.ts
  */
 
@@ -31,11 +31,9 @@ import { UploadFileStatus } from "antd/es/upload/interface";
 import ItemRender from "./ItemRender";
 import { UploadRef } from "antd/es/upload/Upload";
 import { useNavigate } from "react-router-dom";
-import { useGlobalContext } from "../../App";
-import { jsonizeData } from "../../utils";
+import { useGlobalContext, ReportData } from "../../App";
 import LoadingLogo from "../../components/LoadingLogo";
 import { ReactComponent as Safe } from "../../assets/svgs/safe.svg";
-
 const { Dragger } = Upload;
 const SerilizedFileExtension = supportedUploadExtension
   .map((v) => `.${v}`)
@@ -51,7 +49,12 @@ export default function UploadDataSource() {
 
   const [processingUid, setProcessingUid] = useState<string | null>(null);
 
-  const { fileList: fl, setFileList: setFl } = useGlobalContext();
+  const {
+    fileList: fl,
+    setFileList: setFl,
+    reportData,
+    setReportData,
+  } = useGlobalContext();
 
   const inputController = createRef<UploadRef>();
 
@@ -195,20 +198,17 @@ export default function UploadDataSource() {
     if (!matchFile) {
       return message.error("Unexpected error!");
     }
-    const response: {
-      json_report: string;
-      json_source: string;
-      corr_comment: string;
-    } = await rawRes.json();
-
+    const response: ReportData = await rawRes.json();
+    
     if (rawRes.status === 200) {
-      response.json_report = jsonizeData(response.json_report);
-      response.json_source = jsonizeData(response.json_source);
-      response.corr_comment = jsonizeData(response.corr_comment);
+      reportData.status = response.status;
+      reportData.message = response.message
+      reportData.start_count = response.start_count
       matchFile.response = {
         ...(matchFile.response ?? {}),
         response,
       };
+      setReportData(response);
       goCheckReport(matchFile.uid);
     } else {
       message.error("Fail to process your file!");
