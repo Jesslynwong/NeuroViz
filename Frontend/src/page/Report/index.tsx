@@ -6,6 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import StatisticsTab from "./StatisticsTab";
 import DistributiveTab from "./DistributiveTab";
 
+import template from "../../stubs/template.json";
 import { useGlobalContext } from "../../App";
 import { useMemo, useRef } from "react";
 import { jsonizeData } from "../../utils";
@@ -115,20 +116,23 @@ export interface ResponsedObject<T extends string = string> {
 
 export default function Report() {
   const { uid } = useParams();
-  const { fileList, setFileList,reportData } = useGlobalContext();
+  const { fileList, setFileList, reportData } = useGlobalContext();
   const offscreenChartRefs = useRef<HTMLDivElement[]>([]);
-  
+
   const fileResponse = useMemo(() => {
-    const matchedFile = fileList.find((file) => file.uid === uid);    
-    return {
-      status: reportData.status,
-      message: reportData.message,
-      json_report: jsonizeData(reportData.json_report),
-      json_source: jsonizeData(reportData.json_source),
-      start_count: reportData.start_count,
-      corr_comment: jsonizeData(reportData.corr_comment),
-      Img_range: reportData.Img_range,
-    } as ResponsedObject;
+    const matchedFile = fileList.find((file) => file.uid === uid);
+
+    if (process.env.NODE_ENV === "development") {
+      return {
+        status: "succeed",
+        message: "message",
+        json_report: jsonizeData(template.json_report),
+        json_source: jsonizeData(template.json_source),
+        start_count: template.start_count,
+        corr_comment: jsonizeData(template.corr_comment),
+        Img_range: template.Img_range,
+      } as ResponsedObject;
+    }
     return matchedFile?.response.response as ResponsedObject;
   }, [fileList, uid]);
 
@@ -284,7 +288,7 @@ export default function Report() {
           maxWidth: pageWidth - 2 * marginLeft,
         });
 
-        pdf.save("image.pdf");
+        pdf.save("report.pdf");
       } catch (error) {
         message.error("Something wrong!");
       }
