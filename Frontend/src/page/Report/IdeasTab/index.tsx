@@ -10,41 +10,59 @@ import type { TableProps } from "antd";
 import { Card } from "antd";
 import "./index.css";
 import { JsonReport } from "..";
+import { ReactComponent as Critical } from "../../../assets/svgs/critical.svg";
+import { SVGWrapper } from "../../../components/styled.components";
+import { useMemo } from "react";
 
 type DataType = JsonReport["Ideas"]["ideas"][number];
 
-const columns: TableProps<DataType>["columns"] = [
-  {
-    title: "Idea No",
-    dataIndex: "Idea_No",
-    align: "center",
-    render: (val) => (
-      <div style={{ width: "60px", fontFamily: "Fustat", fontSize: "18px" }}>
-        {val}
-      </div>
-    ),
-  },
-  {
-    title: "Idea",
-    dataIndex: "Idea",
-    render: (val) => <div style={{ fontFamily: "Fustat" }}>{val}</div>,
-  },
-  {
-    title: "Reasoning",
-    dataIndex: "Reasoning",
-    render: (val) => <div style={{ fontFamily: "Fustat" }}>{val}</div>,
-  },
-  {
-    title: "Solution",
-    dataIndex: "Solution",
-    render: (val) => <div style={{ fontFamily: "Fustat" }}>{val}</div>,
-  },
-];
+const criticalColors = ["#ff3025", "#f8e02d", "#70f879"];
 
 interface IdeasProps {
   dataSource: JsonReport["Ideas"];
+  xFields: string[];
 }
-export default function Ideas({ dataSource }: IdeasProps) {
+export default function Ideas({ dataSource, xFields }: IdeasProps) {
+  const columns: TableProps<DataType>["columns"] = useMemo(
+    () => [
+      {
+        title: "Critical",
+        dataIndex: "Idea_No",
+        align: "center",
+        render: (val) => (
+          <div style={{ width: "60px", fontFamily: "Fustat" }}>
+            <SVGWrapper width="32px" heigh="32px">
+              <Critical
+                color={
+                  criticalColors[
+                    (xFields[Number(val)]?.charCodeAt(0) || 0) %
+                      criticalColors.length
+                  ]
+                }
+              />
+            </SVGWrapper>
+          </div>
+        ),
+      },
+      {
+        title: "Idea",
+        dataIndex: "Idea",
+        render: (val) => <div style={{ fontFamily: "Fustat" }}>{val}</div>,
+      },
+      {
+        title: "Reasoning",
+        dataIndex: "Reasoning",
+        render: (val) => <div style={{ fontFamily: "Fustat" }}>{val}</div>,
+      },
+      {
+        title: "Solution",
+        dataIndex: "Solution",
+        render: (val) => <div style={{ fontFamily: "Fustat" }}>{val}</div>,
+      },
+    ],
+    [xFields]
+  );
+
   return (
     <div id="idea-content-outline">
       <Card
