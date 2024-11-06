@@ -335,7 +335,12 @@ export default function Report() {
     {
       key: "3",
       label: "Ideas",
-      children: <Ideas dataSource={ideas} />,
+      children: (
+        <Ideas
+          dataSource={ideas}
+          xFields={report.analysis_results.x_axis_fields}
+        />
+      ),
     },
   ];
 
