@@ -34,6 +34,7 @@ import { useNavigate } from "react-router-dom";
 import { useGlobalContext, ReportData } from "../../App";
 import LoadingLogo from "../../components/LoadingLogo";
 import { ReactComponent as Safe } from "../../assets/svgs/safe.svg";
+import { jsonizeData } from "../../utils";
 const { Dragger } = Upload;
 const SerilizedFileExtension = supportedUploadExtension
   .map((v) => `.${v}`)
@@ -199,14 +200,19 @@ export default function UploadDataSource() {
       return message.error("Unexpected error!");
     }
     const response: ReportData = await rawRes.json();
-    
+
     if (rawRes.status === 200) {
       reportData.status = response.status;
-      reportData.message = response.message
-      reportData.start_count = response.start_count
+      reportData.message = response.message;
+      reportData.start_count = response.start_count;
       matchFile.response = {
         ...(matchFile.response ?? {}),
-        response,
+        response: {
+          ...response,
+          json_report: jsonizeData(response.json_report),
+          json_source: jsonizeData(response.json_source),
+          corr_comment: jsonizeData(response.corr_comment),
+        },
       };
       setReportData(response);
       goCheckReport(matchFile.uid);
