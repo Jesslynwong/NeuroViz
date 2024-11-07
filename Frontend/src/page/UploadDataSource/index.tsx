@@ -253,7 +253,7 @@ export default function UploadDataSource() {
             <Title />
           </TitleWrapper>
 
-          <SubTitle>One - Step Data Analyzer For all purpose</SubTitle>
+          <SubTitle>One - Step Data Analyzer For All Purpose</SubTitle>
         </Flex>
 
         <DraggerWrapper>
