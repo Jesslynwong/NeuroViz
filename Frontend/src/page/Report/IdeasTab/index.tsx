@@ -26,7 +26,7 @@ export default function Ideas({ dataSource, xFields }: IdeasProps) {
   const columns: TableProps<DataType>["columns"] = useMemo(
     () => [
       {
-        title: "Critical",
+        title: "Critical Level",
         dataIndex: "Idea_No",
         align: "center",
         render: (val) => (

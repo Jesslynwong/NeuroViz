@@ -191,38 +191,42 @@ export default function UploadDataSource() {
     [draggerStatus, fl, itemRender, setFl]
   );
   const loadReport = async () => {
-    // todo: need to handle empty excel file while fetch api will return 400.
-    const rawRes = await fetch(
-      `${host}/upload_and_process?file_uid=${processingUid}`
-    );
-    const matchFile = fl.find((file) => file.uid === processingUid);
-    if (!matchFile) {
-      return message.error("Unexpected error!");
-    }
-    const response: ReportData = await rawRes.json();
+    try {
+      const rawRes = await fetch(
+        `${host}/upload_and_process?file_uid=${processingUid}`
+      );
+      const matchFile = fl.find((file) => file.uid === processingUid);
+      if (!matchFile) {
+        return message.error("Unexpected error!");
+      }
+      const response: ReportData = await rawRes.json();
 
-    if (rawRes.status === 200) {
-      reportData.status = response.status;
-      reportData.message = response.message;
-      reportData.start_count = response.start_count;
-      matchFile.response = {
-        ...(matchFile.response ?? {}),
-        response: {
-          ...response,
-          json_report: jsonizeData(response.json_report),
-          json_source: jsonizeData(response.json_source),
-          corr_comment: jsonizeData(response.corr_comment),
-        },
-      };
-      setReportData(response);
-      goCheckReport(matchFile.uid);
-    } else {
-      message.error("Fail to process your file!");
-      matchFile.response = {
-        ...(matchFile.response ?? {}),
-        response,
-      };
+      if (rawRes.status === 200) {
+        reportData.status = response.status;
+        reportData.message = response.message;
+        reportData.start_count = response.start_count;
+        matchFile.response = {
+          ...(matchFile.response ?? {}),
+          response: {
+            ...response,
+            json_report: jsonizeData(response.json_report),
+            json_source: jsonizeData(response.json_source),
+            corr_comment: jsonizeData(response.corr_comment),
+          },
+        };
+        setReportData(response);
+        goCheckReport(matchFile.uid);
+      } else {
+        message.error("Fail to process your file!");
+        matchFile.response = {
+          ...(matchFile.response ?? {}),
+          response,
+        };
+      }
+    } catch (error) {
+      message.error("Unexpected error!");
     }
+
     setProcessingUid(null);
   };
 
@@ -253,7 +257,7 @@ export default function UploadDataSource() {
             <Title />
           </TitleWrapper>
 
-          <SubTitle>One - Step Data Analyzer For all purpose</SubTitle>
+          <SubTitle>One - Step Data Analyzer For All Purpose</SubTitle>
         </Flex>
 
         <DraggerWrapper>
