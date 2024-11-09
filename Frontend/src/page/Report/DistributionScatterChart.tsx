@@ -9,8 +9,8 @@
 import * as echarts from "echarts/core";
 import ReactEChartsCore from "echarts-for-react/lib/core";
 
-import { GridComponent, GridComponentOption } from "echarts/components";
-import { ScatterChart, ScatterSeriesOption } from "echarts/charts";
+import { GridComponent } from "echarts/components";
+import { ScatterChart } from "echarts/charts";
 import { UniversalTransition } from "echarts/features";
 import { CanvasRenderer } from "echarts/renderers";
 
@@ -50,13 +50,14 @@ function getOption(
       scale: true,
       name: xAxisTitle.charAt(0).toUpperCase() + xAxisTitle.slice(1),
       nameLocation: "middle",
-      nameGap: 40,
+      nameGap: 30,
       nameTextStyle: {
         fontSize: 14,
       },
       axisLabel: {
         margin: 12,
       },
+      splitNumber: 10,
     },
     yAxis: {
       scale: true,
@@ -80,20 +81,7 @@ function getOption(
       },
     ],
     tooltip: {
-      showDelay: 0,
-      formatter: function (params: any) {
-        return (
-          "• " +
-          xAxisTitle +
-          " : " +
-          params.value[0] +
-          "<br/>" +
-          "• " +
-          yAxisTitle +
-          " : " +
-          params.value[1]
-        );
-      },
+      trigger: "axis",
     },
   };
 }
