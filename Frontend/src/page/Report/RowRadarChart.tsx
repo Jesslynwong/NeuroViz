@@ -1,4 +1,5 @@
 import * as echarts from "echarts/core";
+import ReactEChartsCore from "echarts-for-react/lib/core";
 import {
   TitleComponent,
   TooltipComponent,
@@ -43,19 +44,6 @@ export default function RowRadarChart({
 
   const [activeAction, setActiveAction] = useState<Action>("description");
 
-  useEffect(() => {
-    const chartDom = document.getElementById(`radarChart-${fieldToShow}`);
-    if (chartDom) {
-      const radar = echarts.init(chartDom);
-      radar.setOption(option);
-      const resize = () => radar.resize();
-      window.addEventListener("resize", resize);
-      return () => {
-        window.removeEventListener("resize", resize);
-      };
-    }
-  }, [fieldToShow, option]);
-
   const matchedComment = corr_comment?.target_variables[fieldToShow];
 
   const renderColor = (key: Action) => {
@@ -63,6 +51,7 @@ export default function RowRadarChart({
   };
   const actions: React.ReactNode[] = [
     <SVGWrapper
+      width="100%"
       color={renderColor("description")}
       hoverColor="skyblue"
       onClick={() => setActiveAction("description")}
@@ -70,7 +59,8 @@ export default function RowRadarChart({
       <Description title="description" />
     </SVGWrapper>,
     <SVGWrapper
-      width="16px"
+      width="100%"
+      heigh="16px"
       color={renderColor("insight")}
       hoverColor="skyblue"
       onClick={() => setActiveAction("insight")}
@@ -78,6 +68,7 @@ export default function RowRadarChart({
       <Insight title="insight" />
     </SVGWrapper>,
     <SVGWrapper
+      width="100%"
       color={renderColor("suggest")}
       hoverColor="skyblue"
       onClick={() => setActiveAction("suggest")}
@@ -147,10 +138,15 @@ export default function RowRadarChart({
 
   return (
     <Wrapper>
-      <div
-        id={`radarChart-${fieldToShow}`}
-        style={{ flex: 1, height: "100%", minWidth: "500px" }}
+      <ReactEChartsCore
+        style={{ height: "400px", width: "100%" }}
+        echarts={echarts}
+        option={option}
+        notMerge={true}
+        lazyUpdate={true}
+        theme={"theme_name"}
       />
+
       {matchedComment && (
         <CommentWrapper>
           <Card actions={actions}>{renderDescription()}</Card>
@@ -232,9 +228,6 @@ export const getRadarChartOption = (
             name: field,
             label: {
               show: showLable,
-              formatter: function (params: any) {
-                return params.value;
-              },
             },
           },
         ],

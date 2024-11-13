@@ -76,6 +76,9 @@ export default function StatisticsTable({
       dataIndex: "outliers",
       align: "center",
       render: (data: number[]) => {
+        if (!data) {
+          return "-";
+        }
         return (
           <Tooltip
             title={`[ ${data.sort((a, b) => a - b).join(", ")} ]`}
@@ -162,6 +165,7 @@ const Stars = ({
         ? "-"
         : Array.from({ length: totalCount }).map((_, i) => (
             <StyledImg
+              key={`star-${i}`}
               style={{ opacity: i < count ? 1 : 0.4 }}
               src={i < count ? star : starEmpty}
               alt="star empty"

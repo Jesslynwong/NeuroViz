@@ -30,8 +30,8 @@ export default function Ideas({ dataSource, xFields }: IdeasProps) {
         dataIndex: "Idea_No",
         align: "center",
         render: (val) => (
-          <div style={{ width: "60px", fontFamily: "Fustat" }}>
-            <SVGWrapper width="32px" heigh="32px">
+          <div style={{ width: "100%", fontFamily: "Fustat" }}>
+            <SVGWrapper width="100%" heigh="32px">
               <Critical
                 color={
                   criticalColors[

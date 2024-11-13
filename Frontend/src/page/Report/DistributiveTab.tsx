@@ -7,17 +7,14 @@
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 
-import { DownOutlined, SmileOutlined } from "@ant-design/icons";
+import { DownOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Dropdown, Space } from "antd";
 import { forwardRef, useMemo, useState } from "react";
-import DistributiveBarChart, {
-  BarChartDataProps,
-} from "./DistributionBarChart";
+import DistributiveBarChart from "./DistributionBarChart";
 import DistributionScatterChart from "./DistributionScatterChart";
-import { JsonSource, ResponsedObject } from "./index";
+import { ResponsedObject } from "./index";
 import { getColor } from "../../utils/colors";
-const attrs = ["deposit", "age", "liability"];
 
 interface DistributiveTabProps {
   exportPDF?: boolean;
@@ -63,6 +60,7 @@ export default forwardRef<HTMLDivElement, DistributiveTabProps>(
         xAxisLabel: matched.x_range_point,
         yValue: matched.group,
         yAxisTitle: yAxisLabel,
+        selectedField: selectiveAttr[selectedNameIdx],
         source: get2Darr(
           rawData[selectiveAttr[selectedNameIdx]] as unknown as Cal2Darr,
           rawData[yAxisLabel] as unknown as Cal2Darr
@@ -92,11 +90,7 @@ export default forwardRef<HTMLDivElement, DistributiveTabProps>(
             </Space>
           </a>
         </Dropdown>
-        <DistributiveBarChart
-          showLabel={exportPDF}
-          data={getBarChartData()}
-          color={getColor(selectedNameIdx)}
-        />
+        <DistributiveBarChart showLabel={exportPDF} data={getBarChartData()} />
         <DistributionScatterChart
           data={get2Darr(
             rawData[selectiveAttr[selectedNameIdx]] as unknown as Cal2Darr,

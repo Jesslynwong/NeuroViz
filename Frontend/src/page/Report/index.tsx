@@ -6,13 +6,15 @@ import { useNavigate, useParams } from "react-router-dom";
 import StatisticsTab from "./StatisticsTab";
 import DistributiveTab from "./DistributiveTab";
 
-import template from "../../stubs/template.json";
+import template from "../../stubs/template1.json";
 import { useGlobalContext } from "../../App";
 import { useMemo, useRef } from "react";
 import { jsonizeData } from "../../utils";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { getRadarChartOption } from "./RowRadarChart";
+import StatisticsTable from "./StatisticsTable";
+import ReactDOM from "react-dom";
 
 export type Item = {
   count: number;
@@ -178,10 +180,12 @@ export default function Report() {
   }
 
   const exportPDF = async () => {
-    const table = document.querySelector("table");
-    if (table) {
+    const offscreenRoot = getOffscreenRoot();
+    if (offscreenRoot) {
       try {
-        const canvas = await html2canvas(table as HTMLElement, { scale: 1 });
+        const canvas = await html2canvas(offscreenRoot as HTMLElement, {
+          scale: 1,
+        });
 
         const pdf = new jsPDF({
           orientation: canvas.width > canvas.height ? "landscape" : "portrait",
@@ -381,6 +385,7 @@ export default function Report() {
         </Card>
         {report.analysis_results.x_axis_fields.map((_, i) => (
           <DistributiveTab
+            key={`DistributiveTab-${i}`}
             ref={(ref) => {
               if (ref) {
                 offscreenChartRefs.current[i] = ref;
@@ -396,10 +401,38 @@ export default function Report() {
             }}
           />
         ))}
+
+        {ReactDOM.createPortal(
+          <StatisticsTable
+            dataSource={{
+              analysis_results: report.analysis_results,
+              outliers: report.outliers,
+              start_count: fileResponse.start_count,
+              corr_comment: fileResponse.corr_comment,
+            }}
+          />,
+          getOffscreenRoot()
+        )}
       </ConfigProvider>
     </ReportWrapper>
   );
 }
+
+const getOffscreenRoot = () => {
+  const id = "offscreenRoot";
+  const node = document.querySelector(`#${id}`);
+  if (node) {
+    return node;
+  }
+  const offscreenRoot = document.createElement("section");
+  offscreenRoot.style.position = "absolute";
+  offscreenRoot.style.top = "-10000px";
+  offscreenRoot.style.left = "-10000px";
+  offscreenRoot.style.zIndex = "-20";
+  offscreenRoot.id = id;
+  document.body.appendChild(offscreenRoot);
+  return offscreenRoot;
+};
 
 const ReportWrapper = styled.div`
   padding: 20px;

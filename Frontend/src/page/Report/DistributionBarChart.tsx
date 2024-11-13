@@ -6,12 +6,12 @@
  * @FilePath: /dataVis/src/page/Report/DistributionBarChart.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
-import React from "react";
 import ReactEChartsCore from "echarts-for-react/lib/core";
 import * as echarts from "echarts/core";
 import { BarChart, LineChart } from "echarts/charts";
 import { GridComponent, TooltipComponent } from "echarts/components";
 import { CanvasRenderer } from "echarts/renderers";
+import Decimal from "decimal.js";
 
 echarts.use([
   TooltipComponent,
@@ -26,8 +26,8 @@ export interface DistributionBarChartProps {
     xAxisLabel: number[];
     yAxisTitle: string;
     source: number[][];
+    selectedField: string;
   };
-  color: string;
   showLabel?: boolean;
 }
 
@@ -35,13 +35,12 @@ export type BarChartDataProps = DistributionBarChartProps["data"];
 
 export default function DistributionBarChart({
   data,
-  color,
   showLabel,
 }: DistributionBarChartProps) {
   return (
     <ReactEChartsCore
       echarts={echarts}
-      option={getOption(data, color, 20, showLabel)}
+      option={getOption(data, showLabel)}
       notMerge={true}
       lazyUpdate={true}
       theme={"theme_name"}
@@ -49,12 +48,9 @@ export default function DistributionBarChart({
   );
 }
 
-function getOption(
-  data: BarChartDataProps,
-  color: string,
-  barCount: number,
-  showLabel?: boolean
-) {
+function getOption(data: BarChartDataProps, showLabel?: boolean) {
+  const selectedFieldName =
+    data.selectedField.charAt(0).toUpperCase() + data.selectedField.slice(1);
   const sortedDataSource = [...data.source].sort((a, b) => a[0] - b[0]);
   const sortedAxisSource = sortedDataSource.map((v) => v[0]);
 
@@ -63,23 +59,36 @@ function getOption(
 
   const min = sortedAxisSource[0];
   const max = sortedAxisSource[sortedAxisSource.length - 1];
-  const diff = max - min;
-  const baseUnit = (diff > 1000 ? 10 : 5) ** (diff.toString().length - 1) || 1;
-  const axisMin = Math.floor(min / baseUnit) * baseUnit;
-  const axisMax = Math.ceil(max / baseUnit) * baseUnit;
+  const offset = max - min;
 
-  const gap = (axisMax - axisMin) / barCount;
+  let splitNumber = 10;
+  let interval = new Decimal(2);
+  if (offset / splitNumber > 2) {
+    interval = new Decimal(Math.ceil(offset / splitNumber));
+  } else {
+    interval = new Decimal(offset).dividedBy(splitNumber);
+  }
 
-  const xAxisLabel = Array.from({ length: barCount }).map(
-    (_, i) => axisMin + i * gap
+  const axisMin = new Decimal(min).dividedBy(interval).floor().times(interval);
+  const axisMax = new Decimal(max).dividedBy(interval).ceil().times(interval);
+
+  let count = 0;
+
+  while (interval.times(count).plus(min).lessThan(max)) {
+    count++;
+  }
+  splitNumber = count;
+
+  const xAxisLabel = Array.from({ length: splitNumber }).map((_, i) =>
+    interval.times(i).plus(axisMin).toNumber()
   );
-  xAxisLabel.push(axisMax);
+  xAxisLabel.push(axisMax.toNumber());
 
   const yAxisArr: number[] = [];
   const averageArr: number[] = [];
 
   let wipIndex = 0;
-  const frequenceArr = Array.from({ length: barCount }).map((_, i) => {
+  const frequenceArr = Array.from({ length: splitNumber }).map((_, i) => {
     const currentRange = [xAxisLabel[i], xAxisLabel[i + 1]];
 
     let count = 0;
@@ -89,12 +98,15 @@ function getOption(
       sortedAxisSource[wipIndex] >= currentRange[0] &&
       sortedAxisSource[wipIndex] < currentRange[1]
     ) {
-      yAxisArr[i] = (yAxisArr[i] ?? 0) + sortedDataSource[wipIndex][1];
+      yAxisArr[i] = yAxisArr[i] + sortedDataSource[wipIndex][1];
       count++;
       wipIndex++;
     }
 
     averageArr[i] = yAxisArr[i] / count;
+    if (isNaN(averageArr[i])) {
+      averageArr[i] = 0;
+    }
 
     return count / sortedAxisSource.length;
   });
@@ -109,7 +121,7 @@ function getOption(
         if (!items[0]) {
           return "";
         }
-        return `
+        return `${selectedFieldName} 
         [${xAxisLabel[items[0].dataIndex]}, ${
           xAxisLabel[items[0].dataIndex + 1]
         }) <br />
@@ -121,13 +133,14 @@ function getOption(
         </div>
           `
           )
-          .join("")} 
+          .join("")}
         `;
       },
     },
     legend: {
-      data: ["Frequence", yAxisLineChartName, "Average"],
+      data: ["Frequence", "Average", yAxisLineChartName],
     },
+
     xAxis: [
       {
         type: "category",
@@ -138,7 +151,9 @@ function getOption(
             formatter: (params: any) => {
               const index: number | undefined = params.seriesData[0].dataIndex;
               if (typeof index === "number") {
-                return `[${xAxisLabel[index]}, ${xAxisLabel[index + 1]})`;
+                return `${selectedFieldName} [${xAxisLabel[index]}, ${
+                  xAxisLabel[index + 1]
+                })`;
               } else {
                 return "";
               }
@@ -148,6 +163,9 @@ function getOption(
       },
       {
         type: "category",
+        nameLocation: "middle",
+        nameGap: 30,
+        name: selectedFieldName,
         data: xAxisLabel,
         axisTick: {
           alignWithLabel: false,
@@ -170,12 +188,28 @@ function getOption(
       },
       {
         type: "value",
-        name: yAxisLineChartName,
+        name: "Average",
         position: "right",
         alignTicks: true,
         axisLine: {
           show: true,
         },
+      },
+      {
+        type: "value",
+        name: yAxisLineChartName,
+        nameGap: 20,
+        position: "right",
+        nameLocation: "start",
+        axisLine: {
+          show: true,
+          onZero: false,
+        },
+        axisTick: {
+          show: true,
+          alignWithLabel: false,
+        },
+        offset: -1,
       },
     ],
     series: [
@@ -189,7 +223,14 @@ function getOption(
           },
         },
         type: "bar",
+        barWidth: "100%",
         xAxisIndex: 0,
+      },
+      {
+        name: "Average",
+        type: "line",
+        yAxisIndex: 1,
+        data: averageArr,
       },
       {
         name: yAxisLineChartName,
@@ -198,16 +239,7 @@ function getOption(
         data: yAxisArr,
         label: {
           show: showLabel,
-          formatter: function (params: any) {
-            return params.value;
-          },
         },
-      },
-      {
-        name: "Average",
-        type: "line",
-        yAxisIndex: 1,
-        data: averageArr.map((v) => (isNaN(v) ? "0" : v)),
       },
     ],
   };
